@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Spacy AI</title>
+    <link rel="shortcut icon" href="/assets/img/icon.png" type="image/png">
+    <!-- <script src="/assets/js/live.js"></script> -->
+    <link rel="stylesheet" href="/assets/css/settings.css">
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "j5fg00qrn9");
+    </script>
+</head>
+
+<body>
+    <h2>Settings</h2>
+    <div class="setting">
+        <label for="voices">Select Speech Voice:</label>
+        <br>
+        <select name="" id="voices"></select>
+    </div>
+
+    <div class="setting">
+        <label for="speed">Select Speech Speed:</label>
+        <br>
+        <select name="" id="speed">
+            <option value="0.1">0.1x</option>
+            <option value="0.2">0.2x</option>
+            <option value="0.3">0.3x</option>
+            <option value="0.4">0.4x</option>
+            <option value="0.5">0.5x</option>
+            <option value="0.6">0.6x</option>
+            <option value="0.7">0.7x</option>
+            <option value="0.8">0.8x</option>
+            <option value="0.9">0.9x</option>
+            <option value="1">1x</option>
+        </select>
+    </div>
+
+    <a href="/" class="return-btn">Return To Assistant</a>
+</body>
+
+<script>
+    let AvailableVoices;
+
+    function GetSpeechSysthesisVoices() {
+        return new Promise(
+            function (resolve, reject) {
+                let synth = window.speechSynthesis;
+                let id;
+
+                id = setInterval(() => {
+                    if (synth.getVoices().length !== 0) {
+                        resolve(synth.getVoices());
+                        clearInterval(id);
+                    }
+                }, 10);
+            }
+        )
+    }
+
+    if (localStorage.getItem('rate') != null) {
+        document.querySelector('option[value="' + localStorage.getItem('rate') + '"]').setAttribute('selected', 'true');
+    } else {
+        document.querySelector('option[value="1"]').setAttribute('selected', 'true');
+    }
+
+    GetSpeechSysthesisVoices().then((voices) => {
+        AvailableVoices = voices;
+        let SelectedVoice = localStorage.getItem('voice') != null ? localStorage.getItem('voice') : '0';
+        for (let i = 0; i < voices.length; i++) {
+            let voiceOpt = document.createElement('option');
+            voiceOpt.setAttribute('value', i);
+            if (i == parseInt(SelectedVoice)) { voiceOpt.setAttribute('selected', 'true'); }
+            voiceOpt.innerText = voices[i]['name'];
+            document.querySelector('#voices').appendChild(voiceOpt);
+        }
+    });
+
+    document.querySelector('#voices').onchange = () => {
+        text = new SpeechSynthesisUtterance("This is an example of this voice!");
+        text.voice = AvailableVoices[document.querySelector('#voices').value];
+        localStorage.setItem('voice', document.querySelector('#voices').value);
+        speechSynthesis.speak(text);
+    }
+
+    document.querySelector('#speed').onchange = () => {
+        text = new SpeechSynthesisUtterance("This is an example of this speed!");
+        text.rate = document.querySelector('#speed').value;
+        text.voice = AvailableVoices[localStorage.getItem('voice')];
+        localStorage.setItem('rate', document.querySelector('#speed').value);
+        speechSynthesis.speak(text);
+    }
+</script>
+
+</html>

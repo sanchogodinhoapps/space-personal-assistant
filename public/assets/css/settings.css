@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
+
+body {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(53, 53, 53);
+    color: white;
+    font-family: 'Barlow', sans-serif;
+}
+
+h2 {
+    text-align: center;
+    margin: 0;
+    padding-top: 20px;
+    margin-bottom: 20px;
+}
+
+.setting {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 700px;
+    margin-left: 50%;
+    transform: translate(-50%);
+}
+
+.setting {
+    margin-top: 20px;
+}
+
+label {
+    font-size: 20px;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.return-btn {
+    all: unset;
+    width: 200px;
+    color: white;
+    background-color: rgb(110, 9, 110);
+    padding: 10px;
+    position: fixed;
+    margin-left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    bottom: 20px;
+    transition: all .10s linear;
+}
+
+.return-btn:active {
+    background-color: rgb(99, 8, 99);
+}
