@@ -43,7 +43,7 @@
     </div>
 
     <div class="setting">
-        <label for="change-api-key">Set/Change OpenAI API Key</label>
+        <label for="change-api-key">Set/Change/Remove Your OpenAI API Key (Optional)</label>
         <div class="setting-input">
             <input type="text" id="change-api-key" placeholder="Enter Your Text Here">
             <div class="ok" onclick="updateApiKey();">Save</div>
@@ -57,14 +57,15 @@
     let AvailableVoices;
 
     const updateApiKey = () => {
-        if (document.querySelector('#change-api-key').value != null && document.querySelector('#change-api-key').value.trim() != '' && document.querySelector('#change-api-key').value.startsWith('sk-')) {
-            fetch('/setOpenAIApiKey/' + document.querySelector('#change-api-key').value);
-            alert('Successfully Updated Your OpenAI API Key!');
-        }
-        else {
-            alert('Please Enter A Valid API Key!');
-        }
+        fetch('/setOpenAIApiKey/' + (document.querySelector('#change-api-key').value.startsWith('sk-') ? document.querySelector('#change-api-key').value : 'null'));
+        alert('Successfully Updated Your OpenAI API Configuration!\n\nYou May Need To Restart This Space App In Order To See The Changes!');
     }
+
+    (async () => {
+        try {
+            document.querySelector('#change-api-key').value = await (await fetch('/getApiKey')).text();
+        } catch (err) { console.error(err); }
+    })();
 
     function GetSpeechSysthesisVoices() {
         return new Promise(

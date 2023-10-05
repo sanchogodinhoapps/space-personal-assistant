@@ -10,7 +10,7 @@
     <!-- <script src="/assets/js/live.js"></script> -->
     <link rel="stylesheet" href="/assets/css/index.css">
     <script src="/assets/js/fuse.js"></script>
-    <script src="/assets/commands.js" async defer></script>
+    <script src="/assets/commands.js"></script>
     <link rel="manifest" href="/manifest.json">
     <script type="text/javascript">
         (function (c, l, a, r, i, t, y) {
@@ -60,26 +60,13 @@
         let text;
         let queryParams = new URLSearchParams(window.location.search);
 
-        window.onload = () => {
-            fuse = new Fuse(commands, {
-                keys: [
-                    'cmd'
-                ]
-            });
-        }
+        fuse = new Fuse(commands, {
+            keys: [
+                'cmd'
+            ]
+        });
 
         document.querySelector('.command').focus();
-
-        if (localStorage.getItem('gpt-key') == null || localStorage.getItem('gpt-key') != 'true') {
-            OpenAI_APIKey = prompt('Enter Your OpenAI API Key Here');
-            if (OpenAI_APIKey != null && OpenAI_APIKey.trim() != '' && OpenAI_APIKey.startsWith('sk-')) {
-                fetch('/setOpenAIApiKey/' + OpenAI_APIKey);
-                alert('Successfully Updated The OpenAI API Key, Now You Will Be Able To Use All Functionalities!');
-                localStorage.setItem('gpt-key', 'true');
-            } else {
-                alert('An OpenAI API Key Is Required To Use Non Programmed Commands!');
-            }
-        }
 
         if (queryParams.get('pwa') != null && queryParams.get('pwa') == 'true') {
             document.querySelector('title').remove();
@@ -209,7 +196,7 @@
                             Reply('Thank you so much for the compliment!');
                         }
                         else if (commandType == 'about') {
-                            Reply('I am a Personal Voice Assistant built on Deta Space For All Detonians by Sancho Godinho. I was built as a part of a Deta Space hackathon. I have an integration with GPT 3.5 Turbo due to which I can answer any question that was available upto September 2021!');
+                            Reply('I am a Personal Voice Assistant built on Deta Space For All Detonians by Sancho Godinho. I was built as a part of a Deta Space hackathon. I have an integration with Google Makersuit & GPT 3.5 Turbo due to which I can answer most questions!');
                         }
                         else if (commandType == 'close-tab') {
                             Reply('Trying to close any opened tabs');
@@ -230,10 +217,10 @@
                             }
                         }
                         else if (commandType == 'person') {
-                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()));
+                            Reply(await (await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', '')));
                         }
                         else if (commandType == 'meaning') {
-                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()));
+                            Reply(await (await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words')).text())).replaceAll('\\', '')));
                         }
                         else if (commandType == 'force-stop') {
                             try {
@@ -256,7 +243,7 @@
                             Reply(equation.replaceAll('**2', ' square ').replaceAll('**3', ' cube ').replaceAll('**', ' raised to ').replaceAll('*', ' multiplied by ').replaceAll('/', ' divided by ') + ' equals to ' + eval(equation.match(/[0-9+\-*/()√π.]/g).join('')));
                         }
                         else {
-                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()).replaceAll('*', ''));
+                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', ''));
                         }
                     } else if (results[0].item.reply != null) {
                         if (results[0].item.exec != null) {
@@ -266,7 +253,7 @@
                     }
                 }
                 else {
-                    Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()).replaceAll('*', ''));
+                    Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', ''));
                 }
             } catch (err) {
                 console.error(err);

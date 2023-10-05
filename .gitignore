@@ -1,3 +1,4 @@
 .space
 Spacefile
 private
+node_modules

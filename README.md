@@ -1,15 +1,15 @@
 # Space Personal Assistant
-A Free & [Open Source](https://github.com/sanchogodinhoapps/space-personal-assistant) Personal Assistant With Free Built In ChatGPT!  
+A Free & [Open Source](https://github.com/sanchogodinhoapps/space-personal-assistant) Personal Assistant With Free Built In AI Which Can Answer Any General Question!
 
 **Made With ❤️ By [Sancho Godinho](https://github.com/sancho1952007) at [SG Apps](https://github.com/sanchogodinhoapps)**  
 This project is built as a part of the Deta Space Hackathon 2023!  
 
-**Note: Due Legal Concerns Of GPT4Free, We Shifted Our Whole Code To Use The Official OpenAI SDK. An OpenAI API Key Is Required For Unprogrammed Commands!**  
+**Note: We Have Implemented A Free AI, Google Makesuit Into This App. An OpenAI API Key If You Want To Use Chat GPT!**  
 
 **If You're From The Space Hackathon & Like This Project, Please Vote This Project💗**
 
 ## How to use it?
-**Voice (Note, this may not function properly on chrome mobile due to less compatibility):**  
+**Voice (Note, this may not function properly on mobile phones due to less compatibility):**  
 Just Say  "hi space", "hey space" or "space" to make it start accepting your commands!  
 ***Examples:***  
 *1. Hi space, who are you?*  
@@ -34,18 +34,19 @@ Just Type In Your Command and press enter key or the send button!
 ...and many more commands!
 
 ## What language models are used?
-It has been integrated it with Chat GPT 3.5 Turbo  
-It has knowledge upto September 2021  
+It has direct free integration with Google Makesuit AI (Free)  
+It has also been integrated it with Chat GPT 3.5 Turbo (Requires An OpenAI API Key)  
 
 ## What are the upcoming features?
 - Support Taking Noted And Saving Them Into Deta Collection
 - Integration With Other Deta Space Apps
-- Add Custom Commands
-- Option To Choose Custom GPT Model
+- Add Custom Commands  
 ...and much more planned!
 
 ## Credits?
 - [Deta Space](https://deta.space/) - For Hosting This App On Their Platform & Helping With The Development GPT Token
+- [Omar Playz](https://omarplayz.eu.org/) - For Recommending Google Makersuite, A Free AI Model like ChatGPT
+- [Google Makersuit](https://makersuite.google.com) - For Legit Free AI Access
 - [Github](https://github.com/sanchogodinhoapps/space-personal-assistant) - For Hosting This As A Publically Available Copy Of The Code
 - [NodeJS](https://nodejs.org/) - Language Of The Backend
 - [ExpressJS](https://expressjs.com/) - For Handiling The Requests In The Backend Server
