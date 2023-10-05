@@ -59,3 +59,40 @@ select {
 .return-btn:active {
     background-color: rgb(99, 8, 99);
 }
+
+.setting-input {
+    display: flex;
+}
+
+.setting-input input {
+    width: calc(100% - 40px);
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 20px;
+    border: 0;
+}
+
+.setting-input div {
+    width: 50px;
+    background-color: blueviolet;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    user-select: none;
+    cursor: pointer;
+    transition: all .10s linear;
+}
+
+.setting-input div:active {
+    background-color: rgb(123, 39, 201);
+}
+
+* {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Space - Your AI Powered Personal Assistant</title>
     <meta name="description" content="Space AI is a free personal assistant integrated with GPT 3.5 Turbo!">
     <link rel="shortcut icon" href="/assets/img/icon.png" type="image/png">
@@ -68,6 +68,19 @@
             });
         }
 
+        document.querySelector('.command').focus();
+
+        if (localStorage.getItem('gpt-key') == null || localStorage.getItem('gpt-key') != 'true') {
+            OpenAI_APIKey = prompt('Enter Your OpenAI API Key Here');
+            if (OpenAI_APIKey != null && OpenAI_APIKey.trim() != '' && OpenAI_APIKey.startsWith('sk-')) {
+                fetch('/setOpenAIApiKey/' + OpenAI_APIKey);
+                alert('Successfully Updated The OpenAI API Key, Now You Will Be Able To Use All Functionalities!');
+                localStorage.setItem('gpt-key', 'true');
+            } else {
+                alert('An OpenAI API Key Is Required To Use Non Programmed Commands!');
+            }
+        }
+
         if (queryParams.get('pwa') != null && queryParams.get('pwa') == 'true') {
             document.querySelector('title').remove();
         }
@@ -79,14 +92,6 @@
                 alert('Please Enable Your Microphone In Order To Activate Voice Commands!');
                 localStorage.setItem('microphone-message', 'true');
             }
-        }
-
-        document.querySelector('.command').focus();
-        speechSynthesis.speak(new SpeechSynthesisUtterance(''));
-        const worked = speechSynthesis.speaking || speechSynthesis.pending;
-        if (worked) {
-            document.querySelector('.toggle-voice').innerText = 'Disable Voice';
-            voiceEnabled = true;
         }
 
         const replaceFirstOccurance = (data) => {
@@ -177,7 +182,8 @@
                 Clear();
                 UpdateCommand('You: ' + command);
                 const results = fuse.search(command);
-                if (results[0] != null) {
+                try { speechSynthesis.cancel(); } catch { }
+                if (results.length > 0 && results[0] != null) {
                     let commandType = results[0].item.type;
                     if (commandType != null) {
                         if (commandType == 'weather') {
@@ -206,8 +212,8 @@
                             Reply('I am a Personal Voice Assistant built on Deta Space For All Detonians by Sancho Godinho. I was built as a part of a Deta Space hackathon. I have an integration with GPT 3.5 Turbo due to which I can answer any question that was available upto September 2021!');
                         }
                         else if (commandType == 'close-tab') {
+                            Reply('Trying to close any opened tabs');
                             try {
-                                Reply('Trying to close any opened tabs');
                                 NewWindow.close();
                                 NewWindow = null;
                             }
@@ -224,10 +230,10 @@
                             }
                         }
                         else if (commandType == 'person') {
-                            Reply(await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text());
+                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()));
                         }
                         else if (commandType == 'meaning') {
-                            Reply(await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text());
+                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()));
                         }
                         else if (commandType == 'force-stop') {
                             try {
@@ -248,8 +254,9 @@
 
                             equation = equation.match(/[0-9+\-*/()√π.:²]/g).join('');
                             Reply(equation.replaceAll('**2', ' square ').replaceAll('**3', ' cube ').replaceAll('**', ' raised to ').replaceAll('*', ' multiplied by ').replaceAll('/', ' divided by ') + ' equals to ' + eval(equation.match(/[0-9+\-*/()√π.]/g).join('')));
-                        } else {
-                            Reply(await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text().replaceAll('*', ''));
+                        }
+                        else {
+                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()).replaceAll('*', ''));
                         }
                     } else if (results[0].item.reply != null) {
                         if (results[0].item.exec != null) {
@@ -258,20 +265,14 @@
                         Reply(results[0].item.reply);
                     }
                 }
+                else {
+                    Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in under 50 words'))).text()).replaceAll('*', ''));
+                }
             } catch (err) {
                 console.error(err);
                 Reply('Sorry, I\'m Unsure About That!');
             }
             cmdNo++;
-        }
-
-        if (("webkitSpeechRecognition" in window && 'speechSynthesis' in window) == false) {
-            alert('Please Use Another Browser Since Speech Recognition/Speech Systhesis Is Not Supported By Your Current Browser!');
-        }
-        else {
-            speechRecognition = new webkitSpeechRecognition();
-            speechRecognition.continuous = true;
-            speechRecognition.start();
         }
 
         function GetSpeechSysthesisVoices() {
@@ -290,10 +291,6 @@
             )
         }
 
-        GetSpeechSysthesisVoices().then((voices) => {
-            AvailableVoices = voices;
-        });
-
         document.querySelector('.stop').onclick = () => {
             speechSynthesis.cancel();
         }
@@ -309,10 +306,6 @@
                 speechSynthesis.cancel();
             }
         }
-
-        speechRecognition.addEventListener('end', () => {
-            speechRecognition.start();
-        });
 
         const FetchJSON = async (url) => {
             try {
@@ -340,24 +333,47 @@
             }
         });
 
-        speechRecognition.onresult = async (event) => {
-            let command = Object.values(event.results);
-            command = command[command.length - 1][0]['transcript'];
-            console.log(command);
-            if (command.toLowerCase().trim().startsWith('hi space')) {
-                Process(replaceFirstOccurance({ text: command, from: 'hi space', to: '' }).trim());
+        if (window.webkitSpeechRecognition == null || window.speechSynthesis == null) {
+            if (localStorage.getItem('speech-not-supported') != null && localStorage.getItem('speech-not-supported') != 'true') {
+                alert('Please Use Another Browser To Use Voice Functions Since Speech Recognition/Speech Systhesis Is Not Supported By Your Current Browser!\n\nYou Can Continue Using The Chatbox!');
+                localStorage.setItem('speech-not-supported', 'true');
             }
-            else if (command.toLowerCase().trim().startsWith('hey space')) {
-                Process(replaceFirstOccurance({ text: command, from: 'hey space', to: '' }).trim());
+        }
+        else {
+            speechRecognition = new webkitSpeechRecognition();
+            speechRecognition.continuous = true;
+            speechRecognition.start();
+
+            speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+            const worked = speechSynthesis.speaking || speechSynthesis.pending;
+            if (worked) {
+                document.querySelector('.toggle-voice').innerText = 'Disable Voice';
+                voiceEnabled = true;
             }
-            else if (command.toLowerCase().trim().startsWith('his space')) {
-                Process(replaceFirstOccurance({ text: command, from: 'his space', to: '' }).trim());
-            }
-            else if (command.toLowerCase().trim().startsWith('a space')) {
-                Process(replaceFirstOccurance({ text: command, from: 'a space', to: '' }).trim());
-            }
-            else if (command.toLowerCase().trim().startsWith('space')) {
-                Process(replaceFirstOccurance({ text: command, from: 'space', to: '' }).trim());
+
+            GetSpeechSysthesisVoices().then((voices) => {
+                AvailableVoices = voices;
+            });
+
+            speechRecognition.onresult = async (event) => {
+                let command = Object.values(event.results);
+                command = command[command.length - 1][0]['transcript'];
+                console.log(command);
+                if (command.toLowerCase().trim().startsWith('hi space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'hi space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('hey space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'hey space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('his space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'his space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('a space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'a space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'space', to: '' }).trim());
+                }
             }
         }
     })();

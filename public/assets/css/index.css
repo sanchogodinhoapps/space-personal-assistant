@@ -3,6 +3,7 @@
 body {
     width: 100%;
     height: 100vh;
+    overflow: hidden;
     padding: 0;
     margin: 0;
     background-color: rgb(53, 53, 53);
@@ -18,6 +19,7 @@ body {
     margin-left: 10px;
     margin-bottom: 10px;
     display: flex;
+    font-size: 20px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -31,7 +33,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    bottom: 70px;
+    bottom: 60px;
 }
 
 .option {
@@ -46,6 +48,7 @@ body {
     transition: all .10s linear;
     font-size: 18px;
     border-radius: 5px;
+    margin: 5px;
 }
 
 .stop {
@@ -73,7 +76,7 @@ body {
 }
 
 .input-section input {
-    width: calc(100% - 90px);
+    width: calc(100% - 85px);
     height: calc(100% - 20px);
     background-color: rgb(82, 82, 82);
     padding: 10px;
@@ -82,6 +85,7 @@ body {
     border-bottom-left-radius: 5px;
     border: 0;
     font-size: 20px;
+    z-index: 9999;
 }
 
 .input-section input::placeholder {
@@ -158,4 +162,10 @@ body {
 * {
     outline: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+@media screen and (min-width:500px) {
+    .text {
+        font-size: 30px;
+    }
 }
