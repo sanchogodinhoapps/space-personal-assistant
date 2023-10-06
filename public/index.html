@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Space - Your AI Powered Personal Assistant</title>
-    <meta name="description" content="Space AI is a free personal assistant integrated with GPT 3.5 Turbo!">
+    <meta name="description"
+        content="Space AI is a free personal assistant integrated with Google Makersuit AI & GPT 3.5 Turbo!">
     <link rel="shortcut icon" href="/assets/img/icon.png" type="image/png">
     <!-- <script src="/assets/js/live.js"></script> -->
     <link rel="stylesheet" href="/assets/css/index.css">
-    <script src="/assets/js/fuse.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <script src="/assets/commands.js"></script>
     <link rel="manifest" href="/manifest.json">
     <script type="text/javascript">
@@ -217,10 +218,10 @@
                             }
                         }
                         else if (commandType == 'person') {
-                            Reply(await (await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', '')));
+                            Reply(await (await (await (await fetch('/generate?processor=' + (localStorage.getItem('gpt') != null ? 'gpt' : 'makersuite') + '&query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', '')));
                         }
                         else if (commandType == 'meaning') {
-                            Reply(await (await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words')).text())).replaceAll('\\', '')));
+                            Reply(await (await (await (await fetch('/generate?processor=' + (localStorage.getItem('gpt') != null ? 'gpt' : 'makersuite') + '&query=' + encodeURIComponent(command + ' in 50 words')).text())).replaceAll('\\', '')));
                         }
                         else if (commandType == 'force-stop') {
                             try {
@@ -243,7 +244,7 @@
                             Reply(equation.replaceAll('**2', ' square ').replaceAll('**3', ' cube ').replaceAll('**', ' raised to ').replaceAll('*', ' multiplied by ').replaceAll('/', ' divided by ') + ' equals to ' + eval(equation.match(/[0-9+\-*/()√π.]/g).join('')));
                         }
                         else {
-                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', ''));
+                            Reply(await (await (await fetch('/generate?processor=' + (localStorage.getItem('gpt') != null ? 'gpt' : 'makersuite') + '&query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', ''));
                         }
                     } else if (results[0].item.reply != null) {
                         if (results[0].item.exec != null) {
@@ -253,7 +254,7 @@
                     }
                 }
                 else {
-                    Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', ''));
+                    Reply(await (await (await fetch('/generate?processor=' + (localStorage.getItem('gpt') != null ? 'gpt' : 'makersuite') + '&query=' + encodeURIComponent(command + ' in 50 words'))).text()).replaceAll('\\', ''));
                 }
             } catch (err) {
                 console.error(err);

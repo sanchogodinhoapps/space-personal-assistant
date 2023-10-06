@@ -4,9 +4,7 @@ const path = require('path');
 const OpenAI = require('openai');
 const { Deta } = require('deta');
 require('dotenv').config();
-
-let openai;
-let storedAPIKey;
+let OpenAIKey;
 
 const deta = Deta();
 const SpaceDrive = deta.Drive('Space AI');
@@ -14,36 +12,37 @@ const SpaceDrive = deta.Drive('Space AI');
 app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
-(async () => {
-    storedAPIKey = await SpaceDrive.get('OpenAI API Key.txt');
-    storedAPIKey = await storedAPIKey.text();
-    if (storedAPIKey != null && storedAPIKey != 'null') {
-        openai = new OpenAI({
-            apiKey: storedAPIKey
-        });
-    }
-})();
-
 app.get('/settings', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'settings.html'));
 });
 
 app.get('/generate', async (req, res) => {
-    if (req.query.query != null) {
-        if (openai != null && openai != undefined) {
-            try {
-                let response = await openai.chat.completions.create({
-                    messages: [{ role: 'user', content: req.query.query }],
-                    model: 'gpt-3.5-turbo',
-                });
-                res.send(response.choices[0].message.content);
-            } catch (err) {
-                if (err.code.trim() == 'invalid_api_key') {
-                    res.send('Please Enter A Valid OpenAI API Key From The Settings To Access This Command Or Switch To Google Makesuit By Saving A Blank Open AI API Key In The Settings!');
+    if (req.query.query != null && req.query.processor != null) {
+        if (req.query.processor == 'gpt') {
+            OpenAIKey = OpenAIKey != null ? OpenAIKey : await SpaceDrive.get('OpenAI API Key.txt');
+            if (OpenAIKey != null && OpenAIKey != 'null') {
+                try { OpenAIKey = await OpenAIKey.text(); } catch { }
+                try {
+                    const openai = new OpenAI({
+                        apiKey: OpenAIKey,
+                    });
+
+                    let response = await openai.chat.completions.create({
+                        messages: [{ role: 'user', content: req.query.query }],
+                        model: 'gpt-3.5-turbo',
+                    });
+                    res.send(response.choices[0].message.content);
+                } catch (err) {
+                    if (err.code.trim() == 'invalid_api_key') {
+                        res.send('Please Enter A Valid OpenAI API Key From The Settings To Access This Command Or Switch To Google Makesuit By Saving A Blank Open AI API Key In The Settings!');
+                    }
+                    else {
+                        res.send('Sorry, An Internal Error Occured!');
+                    }
                 }
-                else {
-                    res.send('Sorry, An Internal Error Occured!');
-                }
+            }
+            else {
+                res.send('Please Enter/Remove An OpenAI Key From The Settings!');
             }
         }
         else {
@@ -70,31 +69,28 @@ app.get('/generate', async (req, res) => {
         }
     }
     else {
-        res.end('Please Enter The "query" Parameter!');
+        res.end('Please Enter The Required Query Parameters!');
     }
 });
 
 app.get('/setOpenAIApiKey/:key', async (req, res) => {
     SpaceDrive.put('OpenAI API Key.txt', { data: req.params.key });
     if (req.params.key == 'null') {
-        openai = null;
-        storedAPIKey = 'null';
-    } else {
-        try {
-            openai = new OpenAI({
-                apiKey: req.params.key
-            });
-            storedAPIKey = req.params.key;
-        } catch (err) {
-            console.log(err);
-        }
+        OpenAIKey = null;
     }
 
     res.end();
 });
 
-app.get('/getApiKey', (req, res) => {
-    res.send(storedAPIKey);
+app.get('/getApiKey', async (req, res) => {
+    OpenAIKey = OpenAIKey != null ? OpenAIKey : await SpaceDrive.get('OpenAI API Key.txt');
+    if (OpenAIKey != null && OpenAIKey != 'null') {
+        try { OpenAIKey = await OpenAIKey.text(); } catch { }
+        res.send(OpenAIKey);
+    }
+    else {
+        res.send('null');
+    }
 });
 
 app.listen(process.env.PORT || 8080);

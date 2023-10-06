@@ -58,6 +58,13 @@
 
     const updateApiKey = () => {
         fetch('/setOpenAIApiKey/' + (document.querySelector('#change-api-key').value.startsWith('sk-') ? document.querySelector('#change-api-key').value : 'null'));
+        if (document.querySelector('#change-api-key').value != null && document.querySelector('#change-api-key').value.startsWith('sk-')) {
+            localStorage.setItem('gpt', 'true');
+        }
+        else {
+            document.querySelector('#change-api-key').value = 'null';
+            try { localStorage.removeItem('gpt') } catch { }
+        }
         alert('Successfully Updated Your OpenAI API Configuration!\n\nYou May Need To Restart This Space App In Order To See The Changes!');
     }
 
