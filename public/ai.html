@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Space - Your AI Powered Personal Assistant</title>
+    <meta name="description"
+        content="Space AI is a free personal assistant integrated with Google Makersuit AI & GPT 3.5 Turbo!">
+    <link rel="shortcut icon"
+        href="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/img/icon.png"
+        type="image/png">
+    <!-- <script src="/assets/js/live.js"></script> -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/css/ai.css">
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/commands.js"></script>
+    <link rel="manifest"
+        href="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/manifest.json">
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "j5fg00qrn9");
+    </script>
+</head>
+
+<body>
+    <a href="/settings" class="settings-icon">
+        <img src="https://img.icons8.com/color/50/settings--v1.png" alt="" />
+    </a>
+
+    <div class="text">
+        <div class="text-bot text-part fade-in">Hi, I'm Space</div>
+        <div class="text-bot text-part fade-in animation-delay-1s">
+            Your Personal Voice Assistant!
+        </div>
+        <div class="text-bot text-part fade-in animation-delay-2s">
+            Just Give Me Your Command!
+        </div>
+    </div>
+
+    <div class="input-section">
+        <input type="text" class="command" placeholder="Enter Your Command Here">
+        <img src="https://img.icons8.com/material-rounded/100/sent.png" alt="" class="send" />
+    </div>
+
+
+    <div class="quick-options">
+        <div class="option stop">Stop Answering</div>
+        <div class="option toggle-voice">Enable Voice</div>
+    </div>
+
+</body>
+
+<script>
+    document.body.style.height = (window.innerHeight + 1000) + 'px';
+
+    window.onload = () => {
+        document.body.style.height = window.innerHeight + 'px';
+    }
+
+    window.onresize = () => {
+        document.body.style.height = window.innerHeight + 'px';
+    }
+
+    (async () => {
+        let voiceEnabled = false;
+        let NewWindow;
+        let fuse;
+        let speechRecognition;
+        let cmdNo = 0;
+        let AvailableVoices;
+        let MathGameQuestion;
+        let text;
+        let queryParams = new URLSearchParams(window.location.search);
+
+        fuse = new Fuse(commands, {
+            keys: [
+                'cmd'
+            ],
+            includeScore: true,
+            shouldSort: true,
+            isCaseSensitive: false
+        });
+
+        document.querySelector('.command').focus();
+
+        if (queryParams.get('pwa') != null && queryParams.get('pwa') == 'true') {
+            document.querySelector('title').remove();
+        }
+
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true })
+        } catch {
+            if (localStorage.getItem('microphone-message') == null || localStorage.getItem('microphone-message') != 'true') {
+                alert('Please Enable Your Microphone In Order To Activate Voice Commands!');
+                localStorage.setItem('microphone-message', 'true');
+            }
+        }
+
+        const replaceFirstOccurance = (data) => {
+            let replaced = false;
+            const modifiedString = data.text.replace(new RegExp(data.from, 'ig'), (match) => {
+                if (!replaced) {
+                    replaced = true;
+                    return data.to;
+                }
+                return match;
+            });
+
+            return modifiedString;
+        }
+
+        const Reply = (resp) => {
+            try { document.querySelector('.thinking').remove(); } catch { }
+            let text = document.createElement('div');
+            text.className = 'text-part text-bot';
+            text.innerHTML = '<b class="fade-up animation-delay-5s">Space AI</b>';
+            document.querySelector('.text').appendChild(text);
+
+            UpdateCommand(resp);
+            if (voiceEnabled == true) {
+                let speech = new SpeechSynthesisUtterance(resp);
+                speech.rate = localStorage.getItem('rate') != null ? localStorage.getItem('rate') : 1;
+                speech.voice = AvailableVoices[parseInt(localStorage.getItem('voice')) != null ? parseInt(localStorage.getItem('voice')) : 0];
+                speechSynthesis.speak(speech);
+            }
+        }
+
+        const Clear = () => {
+            document.querySelectorAll('.text-part').forEach(textPart => {
+                textPart.remove();
+            });
+            return;
+        }
+
+        const UpdateCommand = (command) => {
+            try { document.querySelector('.thinking').remove(); } catch { }
+
+            if (command.startsWith('You: ')) {
+                let text = document.createElement('div');
+                text.className = 'text-part fade-in text-you';
+                text.innerHTML = '<b>You</b>'
+                document.querySelector('.text').appendChild(text);
+            }
+
+            let cmdText = document.createElement('div');
+            cmdText.className = ('text-part fade-in animation-delay-2s') + (command.startsWith('You: ') ? 'text-you' : 'text-bot');
+            cmdText.innerText = command.replace('You: ', '');
+            document.querySelector('.text').appendChild(cmdText);
+
+            if (command.startsWith('You: ')) {
+                let gap = document.createElement('div');
+                gap.style.height = '30px';
+                gap.className = 'text-part fade-in text-you';
+                document.querySelector('.text').appendChild(gap);
+
+                let thinking = document.createElement('img');
+                thinking.src = 'https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/img/thinking.gif';
+                thinking.className = 'thinking';
+                document.querySelector('.text').appendChild(thinking);
+
+            }
+            return;
+        }
+
+        const Exec_Command = async (url) => {
+            let code = document.querySelector('textarea[script="' + url + '"]');
+            if (code != null) {
+                eval(code.value);
+            } else {
+                let data = await (await fetch(url)).text();
+                let codeStored = document.createElement('textarea');
+                codeStored.value = data;
+                codeStored.setAttribute('script', url);
+                codeStored.setAttribute('hidden', 'true');
+                document.body.appendChild(codeStored);
+                eval(data);
+            }
+            return;
+        }
+
+
+        const Process = async (command) => {
+            try {
+                Clear();
+                UpdateCommand('You: ' + command);
+                const results = fuse.search(command);
+                try { speechSynthesis.cancel(); } catch { }
+                if (results.length > 0 && results[0] != null && results[0].score < 0.7) {
+                    let commandType = results[0].item.type;
+                    if (commandType != null) {
+                        if (commandType == 'weather') {
+                            Exec_Command('/commands/weather.js')
+                        }
+                        else if (commandType == 'math-game') {
+                            let signs = ['+', '-', '*', '/'];
+                            let formats = [
+                                Math.floor(Math.random() * 1000) + signs[Math.floor(Math.random() * signs.length)] + Math.floor(Math.random() * 1000),
+                                Math.floor(Math.random() * 500) + signs[Math.floor(Math.random() * signs.length)] + Math.floor(Math.random() * 500) + signs[Math.floor(Math.random() * signs.length)] + Math.floor(Math.random() * 500)
+                            ];
+                            let question = formats[Math.floor(Math.random() * formats.length)];
+                            MathGameQuestion = question;
+                            Reply('Sure, let\'s start, your first question is ' + question);
+                        }
+                        else if (commandType == 'locate') {
+                            Exec_Command('/commands/locate.js');
+                        }
+                        else if (commandType == 'game') {
+                            Exec_Command('/commands/games.js');
+                        }
+                        else if (commandType == 'compliment') {
+                            Reply('Thank you so much for the compliment!');
+                        }
+                        else if (commandType == 'about') {
+                            Reply('I am a Personal Voice Assistant built by Sancho Godinho at SG Apps. I was built as a part of a hackathon. I have an integration with Google Makersuit & GPT 3.5 Turbo due to which I can answer most questions!');
+                        }
+                        else if (commandType == 'close-tab') {
+                            Reply('Trying to close any opened tabs');
+                            try {
+                                NewWindow.close();
+                                NewWindow = null;
+                            }
+                            catch { }
+                        }
+                        else if (commandType == 'open-site') {
+                            let site = command.match(/(?:^|\s)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/g);
+                            if (site != null) {
+                                site[0] = site[0].trim();
+                                Reply('Opening ' + site[0]);
+                                NewWindow = window.open('https://' + site[0]);
+                            } else {
+                                Reply('Please say the command open following your url to open a website!');
+                            }
+                        }
+                        else if (commandType == 'person') {
+                            Reply(await (await (await (await fetch('/generate?query=' + encodeURIComponent(command))).text()).replaceAll('\\', '')));
+                        }
+                        else if (commandType == 'meaning') {
+                            Reply(await (await (await (await fetch('/generate?query=' + encodeURIComponent(command)).text())).replaceAll('\\', '')));
+                        }
+                        else if (commandType == 'force-stop') {
+                            try {
+                                speechSynthesis.cancel();
+                            } catch { }
+                            Reply('OK!');
+                        }
+                        else if (commandType == 'math') {
+                            try {
+                                let equation = command
+                                    .replaceAll('multiplied', '*')
+                                    .replaceAll('into', '*')
+                                    .replaceAll('x', '*')
+                                    .replaceAll('raised', '**')
+                                    .replaceAll('power', '**')
+                                    .replaceAll('square', '**2')
+                                    .replaceAll('cube', '**3')
+                                    .replaceAll('by', '/');
+                                equation = equation.match(/[0-9+\-*/()√π.:²]/g).join('');
+                                Reply(equation.replaceAll('**2', ' square ').replaceAll('**3', ' cube ').replaceAll('**', ' raised to ').replaceAll('*', ' multiplied by ').replaceAll('/', ' divided by ') + ' equals to ' + eval(equation.match(/[0-9+\-*/()√π.]/g).join('')));
+                            } catch {
+                                Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command))).text()).replaceAll('\\', ''));
+                            }
+                        }
+                        else {
+                            Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command))).text()).replaceAll('\\', ''));
+                        }
+                    } else if (results[0].item.reply != null) {
+                        if (results[0].item.exec != null) {
+                            eval(results[0].item.exec);
+                        }
+                        Reply(results[0].item.reply);
+                    }
+                }
+                else {
+                    Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command))).text()).replaceAll('\\', ''));
+                }
+            } catch (err) {
+                console.error(err);
+                Reply('Sorry, I\'m Unsure About That!');
+            }
+            cmdNo++;
+        }
+
+        function GetSpeechSysthesisVoices() {
+            return new Promise(
+                function (resolve, reject) {
+                    let synth = window.speechSynthesis;
+                    let id;
+
+                    id = setInterval(() => {
+                        if (synth.getVoices().length !== 0) {
+                            resolve(synth.getVoices());
+                            clearInterval(id);
+                        }
+                    }, 10);
+                }
+            )
+        }
+
+        document.querySelector('.stop').onclick = () => {
+            speechSynthesis.cancel();
+        }
+
+        document.querySelector('.toggle-voice').onclick = () => {
+            if (voiceEnabled == false) {
+                document.querySelector('.toggle-voice').innerText = 'Disable Voice';
+                voiceEnabled = true;
+            }
+            else {
+                document.querySelector('.toggle-voice').innerText = 'Enable Voice';
+                voiceEnabled = false;
+                speechSynthesis.cancel();
+            }
+        }
+
+        const FetchJSON = async (url) => {
+            try {
+                return await (await fetch(url)).json()
+            }
+            catch (err) {
+                console.error(err);
+                return 'Sorry, Failed To Fetch Data From API!';
+            }
+        }
+
+        document.querySelector('.send').addEventListener('click', () => {
+            if (document.querySelector('.command').value != null && document.querySelector('.command').value.trim() != '') {
+                Process(document.querySelector('.command').value);
+                document.querySelector('.command').value = '';
+            }
+        });
+
+        document.querySelector('.command').addEventListener('keydown', (key) => {
+            if (key.keyCode == 13) {
+                if (document.querySelector('.command').value != null && document.querySelector('.command').value.trim() != '') {
+                    Process(document.querySelector('.command').value);
+                    document.querySelector('.command').value = '';
+                }
+            }
+        });
+
+        if (window.webkitSpeechRecognition == null || window.speechSynthesis == null) {
+            if (localStorage.getItem('speech-not-supported') != null && localStorage.getItem('speech-not-supported') != 'true') {
+                alert('Please Use Another Browser To Use Voice Functions Since Speech Recognition/Speech Systhesis Is Not Supported By Your Current Browser!\n\nYou Can Continue Using The Chatbox!');
+                localStorage.setItem('speech-not-supported', 'true');
+            }
+        }
+        else {
+            speechRecognition = new webkitSpeechRecognition();
+            speechRecognition.continuous = true;
+            speechRecognition.start();
+
+            speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+            const worked = speechSynthesis.speaking || speechSynthesis.pending;
+            if (worked) {
+                document.querySelector('.toggle-voice').innerText = 'Disable Voice';
+                voiceEnabled = true;
+            }
+
+            GetSpeechSysthesisVoices().then((voices) => {
+                AvailableVoices = voices;
+            });
+
+            speechRecognition.onresult = async (event) => {
+                let command = Object.values(event.results);
+                command = command[command.length - 1][0]['transcript'];
+                console.log(command);
+                if (command.toLowerCase().trim().startsWith('hi space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'hi space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('hey space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'hey space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('his space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'his space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('a space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'a space', to: '' }).trim());
+                }
+                else if (command.toLowerCase().trim().startsWith('space')) {
+                    Process(replaceFirstOccurance({ text: command, from: 'space', to: '' }).trim());
+                }
+            }
+        }
+    })();
+</script>
+
+</html>

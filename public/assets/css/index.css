@@ -3,169 +3,64 @@
 body {
     width: 100%;
     height: 100vh;
-    overflow: hidden;
     padding: 0;
     margin: 0;
-    background-color: rgb(53, 53, 53);
+    background-color: rgb(67, 58, 75);
     color: white;
-    font-size: 30px;
+    /* overflow: hidden; */
+}
+
+.screen {
+    width: 100%;
+    height: calc(100% - 40px);
+}
+
+#start-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Barlow', sans-serif;
+    text-align: center;
+    text-wrap: balance;
+}
+
+#start-screen img {
+    border-radius: 10px;
+}
+
+#start-screen h3 {
+    margin: 0;
+}
+
+.try-now {
+    all: unset;
+    width: calc(100% - 50px);
+    padding: 10px;
+    background-color: blueviolet;
+    border-radius: 5px;
+    margin-top: 30px;
+    cursor: pointer;
+    max-width: 500px;
+    transition: all .10s linear;
+    box-shadow: 0 0 10px #999999, 0 0 20px blueviolet, 0 0 30px #110e0f, 0 0 10px blueviolet, 0 0 50px blueviolet;
+}
+
+.try-now:hover {
+    transform: scale(1.03);
+}
+
+.try-now:active {
+    background-color: rgb(124, 39, 203);
+}
+
+.message {
     font-family: 'Mooli', sans-serif;
     text-align: center;
 }
 
-.text {
-    width: calc(100% - 20px);
-    height: calc(100% - 70px);
-    margin-left: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    font-size: 20px;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    word-break: break-word;
-}
-
-.quick-options {
-    width: 100%;
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    bottom: 60px;
-}
-
-.option {
-    width: 200px;
-    height: 50px;
+.message a {
+    all: unset;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Barlow', sans-serif;
-    user-select: none;
-    transition: all .10s linear;
-    font-size: 18px;
-    border-radius: 5px;
-    margin: 5px;
-}
-
-.stop {
-    background-color: red;
-}
-
-.stop:active {
-    background-color: rgb(220, 1, 1);
-}
-
-.toggle-voice {
-    background-color: rgb(0, 128, 255);
-}
-
-.toggle-voice:active {
-    background-color: rgb(0, 100, 201);
-}
-
-.input-section {
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.input-section input {
-    width: calc(100% - 85px);
-    height: calc(100% - 20px);
-    background-color: rgb(82, 82, 82);
-    padding: 10px;
-    color: white;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border: 0;
-    font-size: 20px;
-    z-index: 9999;
-}
-
-.input-section input::placeholder {
-    color: rgb(184, 184, 184);
-}
-
-.input-section .send {
-    width: calc(50px - 10px);
-    height: calc(100% - 10px);
-    background-color: rgb(134, 134, 134);
-    cursor: pointer;
-    border-top-right-radius: 5px;
-    padding: 5px;
-    border-bottom-right-radius: 5px;
-    transition: all .10s linear;
-    font-family: 'Barlow', sans-serif;
-    filter: invert(1);
-}
-
-.input-section .send:active {
-    background-color: rgb(127, 127, 127);
-}
-
-.settings-icon {
-    width: 40px;
-    height: 40px;
-    position: fixed;
-    right: 10px;
-    top: 10px;
-    background-color: rgb(33, 33, 33);
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.settings-icon img {
-    width: 80%;
-}
-
-.animation-delay-1s {
-    animation-delay: 1s;
-}
-
-.animation-delay-2s {
-    animation-delay: 2s;
-}
-
-.animation-delay-5s {
-    animation-delay: 5s;
-}
-
-.fade-in {
-    animation-name: fadeIn;
-    animation-timing-function: linear;
-    animation-duration: 2s;
-    transition: all .10s linear;
-    opacity: 0;
-    animation-fill-mode: forwards;
-}
-
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-* {
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-@media screen and (min-width:500px) {
-    .text {
-        font-size: 30px;
-    }
+    color: lightblue;
 }

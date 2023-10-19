@@ -5,9 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Spacy AI</title>
-    <link rel="shortcut icon" href="/assets/img/icon.png" type="image/png">
+    <link rel="shortcut icon"
+        href="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/img/icon.png"
+        type="image/png">
     <!-- <script src="/assets/js/live.js"></script> -->
-    <link rel="stylesheet" href="/assets/css/settings.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/css/settings.css">
+
     <script type="text/javascript">
         (function (c, l, a, r, i, t, y) {
             c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
@@ -50,27 +54,20 @@
         </div>
     </div>
 
-    <a href="/" class="return-btn">Return To Assistant</a>
+    <a href="/ai" class="return-btn">Return To Assistant</a>
 </body>
 
 <script>
     let AvailableVoices;
 
     const updateApiKey = () => {
-        fetch('/setOpenAIApiKey/' + (document.querySelector('#change-api-key').value.startsWith('sk-') ? document.querySelector('#change-api-key').value : 'null'));
-        if (document.querySelector('#change-api-key').value != null && document.querySelector('#change-api-key').value.startsWith('sk-')) {
-            localStorage.setItem('gpt', 'true');
-        }
-        else {
-            document.querySelector('#change-api-key').value = 'null';
-            try { localStorage.removeItem('gpt') } catch { }
-        }
+        fetch('/setChatGPT_API_Key?key=' + document.querySelector('#change-api-key').value);
         alert('Successfully Updated Your OpenAI API Configuration!\n\nYou May Need To Restart This Space App In Order To See The Changes!');
     }
 
     (async () => {
         try {
-            document.querySelector('#change-api-key').value = await (await fetch('/getApiKey')).text();
+            document.querySelector('#change-api-key').value = await (await fetch('/getChatGPT_API_Key')).text();
         } catch (err) { console.error(err); }
     })();
 

@@ -4,7 +4,7 @@ A Free & [Open Source](https://github.com/sanchogodinhoapps/space-personal-assis
 **Made With ❤️ By [Sancho Godinho](https://github.com/sancho1952007) at [SG Apps](https://github.com/sanchogodinhoapps)**  
 This project is built as a part of the Deta Space Hackathon 2023!  
 
-**Note: We Have Implemented A Free AI, Google Makesuit Into This App. An OpenAI API Key If You Want To Use Chat GPT!**  
+**Note: We Have Implemented A Free AI, Google Makersuit Into This App. An OpenAI API Key If You Want To Use Chat GPT!**  
 
 **If You're From The Space Hackathon & Like This Project, Please Vote This Project💗**
 
@@ -34,7 +34,7 @@ Just Type In Your Command and press enter key or the send button!
 ...and many more commands!
 
 ## What language models are used?
-It has direct free integration with Google Makesuit AI (Free)  
+It has direct free integration with Google Makersuit AI (Free)  
 It has also been integrated it with Chat GPT 3.5 Turbo (Requires An OpenAI API Key)  
 
 ## What are the upcoming features?
@@ -45,7 +45,7 @@ It has also been integrated it with Chat GPT 3.5 Turbo (Requires An OpenAI API K
 
 ## Credits?
 - [Deta Space](https://deta.space/) - For Hosting This App On Their Platform & Helping With The Development GPT Token
-- [Omar Playz](https://omarplayz.eu.org/) - For Recommending Google Makersuite, A Free AI Model like ChatGPT
+- [Omarplayz](https://omarplayz.eu.org/) - For Recommending Google Makersuite, A Free AI Model like ChatGPT
 - [Google Makersuit](https://makersuite.google.com) - For Legit Free AI Access
 - [Github](https://github.com/sanchogodinhoapps/space-personal-assistant) - For Hosting This As A Publically Available Copy Of The Code
 - [NodeJS](https://nodejs.org/) - Language Of The Backend
