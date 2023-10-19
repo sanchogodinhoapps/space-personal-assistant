@@ -7,7 +7,6 @@ body {
     margin: 0;
     background-color: rgb(67, 58, 75);
     color: white;
-    /* overflow: hidden; */
 }
 
 .screen {
@@ -44,6 +43,7 @@ body {
     max-width: 500px;
     transition: all .10s linear;
     box-shadow: 0 0 10px #999999, 0 0 20px blueviolet, 0 0 30px #110e0f, 0 0 10px blueviolet, 0 0 50px blueviolet;
+    user-select: none;
 }
 
 .try-now:hover {
@@ -63,4 +63,17 @@ body {
     all: unset;
     cursor: pointer;
     color: lightblue;
+}
+
+@media screen and (max-height:500px) {
+    #start-screen {
+        min-height: 400px;
+        display: block;
+    }
+
+    .try-now {
+        position: absolute;
+        left: 50%;
+        translate: -50% 0;
+    }
 }
