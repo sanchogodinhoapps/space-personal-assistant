@@ -1,4 +1,4 @@
 User-agent: *
-Disallow:
+Disallow: /generate
 
 Sitemap: https://sg-app.com/sitemap.xml
