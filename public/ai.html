@@ -14,9 +14,11 @@
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/css/ai.css">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-    <script
-        src="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/commands.js"></script>
+    <!-- <script
+        src="https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/commands.js"></script> -->
+    <script src="./assets/commands.js"></script>
     <link rel="manifest" href="/manifest.json">
+
     <script type="text/javascript">
         (function (c, l, a, r, i, t, y) {
             c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
@@ -36,9 +38,10 @@
         <div class="text-bot text-part fade-in animation-delay-1s">
             Your Personal Voice Assistant!
         </div>
-        <div class="text-bot text-part fade-in animation-delay-2s">
-            Just Give Me Your Command!
+        <div class="text-bot text-part fade-in animation-delay-2s" style="margin-top:10px;">
+            Say 'Hey Space' Following Your Command Or Use The Text Box!
         </div>
+
     </div>
 
     <div class="input-section">
@@ -76,14 +79,41 @@
         let text;
         let queryParams = new URLSearchParams(window.location.search);
 
-        fuse = new Fuse(commands, {
-            keys: [
-                'cmd'
-            ],
-            includeScore: true,
-            shouldSort: true,
-            isCaseSensitive: false
-        });
+        if (localStorage.getItem('commands') != null) {
+            try {
+                fuse = new Fuse(JSON.parse(localStorage.getItem('commands')), {
+                    keys: [
+                        'cmd'
+                    ],
+                    includeScore: true,
+                    shouldSort: true,
+                    isCaseSensitive: false
+                });
+            } catch (err) {
+                console.error(err);
+                localStorage.removeItem('commands');
+                window.location.reload();
+            }
+        }
+        else {
+            (async () => {
+                try {
+                    eval(await (await (await fetch('https://cdn.jsdelivr.net/gh/sanchogodinhoapps/space-personal-assistant/public/assets/commands.js')).text()));
+                    localStorage.setItem('commands', JSON.stringify(commands));
+                    fuse = new Fuse(commands, {
+                        keys: [
+                            'cmd'
+                        ],
+                        includeScore: true,
+                        shouldSort: true,
+                        isCaseSensitive: false
+                    });
+                } catch (err) {
+                    console.error(err);
+                    alert('Failed To Load Commands, Please Reload The Page And Try Again!');
+                }
+            })();
+        }
 
         document.querySelector('.command').focus();
 
@@ -189,6 +219,7 @@
                 UpdateCommand('You: ' + command);
                 const results = fuse.search(command);
                 try { speechSynthesis.cancel(); } catch { }
+                console.log(results)
                 if (results.length > 0 && results[0] != null && results[0].score < 0.7) {
                     let commandType = results[0].item.type;
                     if (commandType != null) {
@@ -215,7 +246,7 @@
                             Reply('Thank you so much for the compliment!');
                         }
                         else if (commandType == 'about') {
-                            Reply('I am a Personal Voice Assistant built by Sancho Godinho at SG Apps. I was built as a part of a hackathon. I have an integration with Google Makersuit & GPT 3.5 Turbo due to which I can answer most questions!');
+                            Exec_Command('/commands/about.js')
                         }
                         else if (commandType == 'close-tab') {
                             Reply('Trying to close any opened tabs');
@@ -275,7 +306,72 @@
                     }
                 }
                 else {
-                    Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command))).text()).replaceAll('\\', ''));
+                    if (command.includes('generate') && command.includes('image') ||
+                        command.startsWith('give me') && commands.includes('image') ||
+                        command.startsWith('draw me') && command.includes('image')
+                    ) {
+                        SD_API_key = localStorage.getItem('sd-api-key');
+                        console.log(SD_API_key);
+                        if (SD_API_key != null & SD_API_key.trim() != '') {
+                            const path =
+                                "https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image";
+
+                            const headers = {
+                                "Content-Type": "application/json",
+                                Accept: "application/json",
+                                Authorization: 'Bearer ' + SD_API_key
+                            };
+                            const body = {
+                                steps: 40,
+                                width: 512,
+                                height: 512,
+                                seed: 0,
+                                cfg_scale: 5,
+                                samples: 1,
+                                text_prompts: [
+                                    {
+                                        "text": command,
+                                        "weight": 1
+                                    },
+                                ],
+                            };
+
+                            try {
+                                const response = await fetch(
+                                    path,
+                                    {
+                                        headers,
+                                        method: "POST",
+                                        body: JSON.stringify(body),
+                                    }
+                                );
+                                if (!response.ok) {
+                                    Reply('Please Check Your Stability AI API Key!');
+                                }
+                                else {
+                                    const responseJSON = await response.json();
+                                    responseJSON.artifacts.forEach((image, index) => {
+                                        Reply('Opened The Generated Image In A New Tab!');
+                                        console.log(image.base64);
+                                        let _img = new Image();
+                                        _img.src = "data:image/jpg;base64," + image.base64;
+
+                                        var w = window.open("");
+                                        w.document.write(_img.outerHTML);
+
+                                    });
+                                }
+                            } catch (err) {
+                                console.error(err);
+                                Reply('Sorry, An Error Occured Please Check Your API Key!');
+                            }
+                        } else {
+                            alert('Please Enter Your Stable Diffusion Key From The Settings To Generate Images!');
+                        }
+                    }
+                    else {
+                        Reply(await (await (await fetch('/generate?query=' + encodeURIComponent(command))).text()).replaceAll('\\', ''));
+                    }
                 }
             } catch (err) {
                 console.error(err);

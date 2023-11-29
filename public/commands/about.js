@@ -1,0 +1,1 @@
+Reply('I am a Personal Voice Assistant built by Sancho Godinho at SG Apps. I was built as a part of a hackathon. I have an integration with Google Makersuit & GPT 3.5 Turbo due to which I can answer most questions!');

@@ -48,9 +48,15 @@
 
     <div class="setting">
         <label for="change-api-key">Set/Change/Remove Your OpenAI API Key (Optional)</label>
-        <div class="setting-input">
-            <input type="text" id="change-api-key" placeholder="Enter Your Text Here">
+        <div class="setting-input" style="margin-bottom:10px;">
+            <input type="text" id="change-api-key" placeholder="Enter Your API Key">
             <div class="ok" onclick="updateApiKey();">Save</div>
+        </div>
+
+        <label for="sd-api-key">Set/Change/Remove Your Stable Diffusion API Key (Optional)</label>
+        <div class="setting-input">
+            <input type="text" id="sd-api-key" placeholder="Enter Your API Key">
+            <div class="ok" onclick="updateSDApiKey();">Save</div>
         </div>
     </div>
 
@@ -65,8 +71,16 @@
         alert('Successfully Updated Your OpenAI API Configuration!\n\nYou May Need To Restart This Space App In Order To See The Changes!');
     }
 
+    const updateSDApiKey = () => {
+        localStorage.setItem('sd-api-key', document.querySelector('#sd-api-key').value);
+        alert('Successfully set Stable Diffusion API Key!');
+    }
+
     (async () => {
         try {
+            try {
+                document.querySelector('#sd-api-key').value = localStorage.getItem('sd-api-key');
+            } catch { }
             document.querySelector('#change-api-key').value = await (await fetch('/getChatGPT_API_Key')).text();
         } catch (err) { console.error(err); }
     })();

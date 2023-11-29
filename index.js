@@ -45,7 +45,7 @@ app.get('/generate', async (req, res) => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        "prompt": { "text": 'You are Space AI, a voice assistant that answers your commands created by Sancho Godinho at SG Apps. Write a paragraph on ' + req.query.query }
+                        "prompt": { "text": 'You are Space AI, a voice assistant that answers your commands created by Sancho Godinho at SG Apps. You can only answer in text and not markdown. Write a paragraph on ' + req.query.query }
                     })
                 }).then(res => res.json()).then(data => {
                     if (data.candidates.length > 0) {
